@@ -15,6 +15,8 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 export default function Home() {
   const { data, error, isLoading } = useSWR('https://firebasestorage.googleapis.com/v0/b/santa-tracker-firebase.appspot.com/o/route%2Fsanta_en.json?alt=media&2018b', fetcher)
   
+  //uncomment below line to test santa image
+  //const currentDate = new Date('2022-12-25T02:34:30.115Z');
   const currentDate = new Date(Date.now());
   const currentYear = currentDate.getFullYear();
   
@@ -32,7 +34,7 @@ export default function Home() {
       arrival: arrivalDate.getTime(),
       departure: departureDate.getTime()
     }
-  })
+  });
 
   return (
     <Layout>
@@ -49,7 +51,7 @@ export default function Home() {
           </h1>
 
           <Map className={styles.homeMap} width="800" height="400" center={[0, 0]} zoom={1}>
-            {({ TileLayer, Marker, Popup }) => (
+            {({ TileLayer, Marker, Popup }, Leaflet) => (
               <>
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -67,9 +69,42 @@ export default function Home() {
                   const departureMinutes = departureDate.getMinutes();
                   const departureTime = `${departureHours}:${departureMinutes}`;
 
+                  const santaWasHere = currentDate.getTime() - departureDate.getTime() > 0;
+                  const santaIsHere = currentDate.getTime() - arrivalDate.getTime() > 0 && !santaWasHere;
+
+
+                  let iconUrl = '/images/tree-marker-icon.png';
+                  let iconRetinaUrl = '/images/tree-marker-icon-2x.png';
+
+                  if ( santaWasHere ) {
+                    iconUrl = '/images/gift-marker-icon.png';
+                    iconRetinaUrl = '/images/gift-marker-icon-2x.png';
+                  }
+
+                  if ( santaIsHere ) {
+                    iconUrl = '/images/santa-marker-icon.png';
+                    iconRetinaUrl = '/images/santa-marker-icon-2x.png';
+                  }
+
+                  let className = '';
+
+                  if ( santaIsHere ) {
+                    className = `${className} ${styles.iconSantaIsHere}`;
+                  }
+
+
 
                   return (
-                    <Marker key={id} position={[location.lat, location.lng]}>
+                    <Marker 
+                      key={id} 
+                      position={[location.lat, location.lng]}
+                      icon={Leaflet.icon({
+                        iconUrl,
+                        iconRetinaUrl,
+                        iconSize: [41, 41],
+                        className
+                      })}
+                    >
                       <Popup>
                         { city }, { region }
                         <br />
