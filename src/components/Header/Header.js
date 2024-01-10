@@ -11,12 +11,12 @@ const Header = () => {
       <Container className={styles.headerContainer}>
         <p className={styles.headerTitle}>
           <Link href="/">
-            Next.js Leaflet Starter
+            Next.js Leaflet Santa Tracker
           </Link>
         </p>
         <ul className={styles.headerLinks}>
           <li>
-            <a href="https://github.com/colbyfayock/next-leaflet-starter" rel="noreferrer">
+            <a href="" rel="">
               <FaGithub />
             </a>
           </li>
